@@ -86,11 +86,15 @@
 
   // Determine API base
   const BACKEND_BASE = (() => {
+    const hostname = window.location.hostname;
     const port = window.location.port;
     if (port === '3000' || port === '5173' || port === '8080') {
       return 'http://localhost:5000/api';
     }
-    return '/api';
+    if (hostname.includes('onrender.com') || port === '5000') {
+      return '/api';
+    }
+    return 'https://civic-pulse-19kr.onrender.com/api';
   })();
 
   // Initialize SpeechSynthesis Voices

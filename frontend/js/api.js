@@ -1,12 +1,20 @@
 // Central API Configuration & HTTP client
-// Detect backend URL: if on port 3000 (standalone serve) point to backend at 5000
-// If on port 5000 (backend static serve), use relative /api
 const API_BASE = (() => {
+  const hostname = window.location.hostname;
   const port = window.location.port;
+
+  // Local standalone development
   if (port === '3000' || port === '5173' || port === '8080') {
     return 'http://localhost:5000/api';
   }
-  return '/api';
+
+  // When served directly on Render backend or local port 5000
+  if (hostname.includes('onrender.com') || port === '5000') {
+    return '/api';
+  }
+
+  // Deployed on Vercel or any remote mobile/laptop browser
+  return 'https://civic-pulse-19kr.onrender.com/api';
 })();
 
 const api = {
