@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+backend/src/database/*.db
+backend/src/database/*.sqlite
+
+# Uploads & Temporary media
+uploads/
+backend/uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# System Files
+.DS_Store
+Thumbs.db

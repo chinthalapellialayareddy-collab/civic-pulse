@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Official Login – Municipal Command Center | CivicPulse</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .admin-login-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.2);
+      width: 100%;
+      max-width: 460px;
+      padding: 2.75rem 2.25rem;
+    }
+    .badge-official {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(14, 165, 233, 0.12);
+      color: #0284c7;
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #172554 100%); min-height: 100vh;">
+  <header id="main-header"></header>
+
+  <main class="cp-container" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 180px); padding: 2.5rem 1.5rem;">
+    <div class="admin-login-card">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1rem; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+          <span class="badge-official"><i class="fas fa-lock"></i> Municipal Authority Only</span>
+        </div>
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin-top: 0.4rem;">Official Portal Login</h2>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.35rem;">Municipal Command Center & Triage Administration</p>
+      </div>
+
+      <!-- Error Alert Box -->
+      <div id="admin-error-alert" style="display: none; background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+          <i class="fas fa-exclamation-circle" style="color: #ef4444; margin-top: 2px;"></i>
+          <div style="flex: 1; font-size: 0.85rem; color: #991b1b; font-weight: 600;" id="admin-error-text"></div>
+        </div>
+      </div>
+
+      <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 700; color: #1e293b;">Official Email Address</label>
+          <div style="position: relative;">
+            <input type="email" id="admin-email" class="form-control" placeholder="admin@civicpulse.gov" required style="padding-left: 2.75rem;">
+            <i class="fas fa-user-shield" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label class="form-label" style="font-weight: 700; color: #1e293b; margin-bottom: 0;">Password</label>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;"><i class="fas fa-key"></i> Configured in .env</span>
+          </div>
+          <div style="position: relative;">
+            <input type="password" id="admin-password" class="form-control" placeholder="••••••••" required style="padding-left: 2.75rem; padding-right: 2.5rem;">
+            <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+            <button type="button" onclick="toggleAdminPasswordVisibility()" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;" title="Show/Hide Password">
+              <i class="fas fa-eye" id="admin-pwd-eye-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="admin-login-btn" class="btn btn-navy" style="width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 700; margin-top: 0.75rem; background: #0f172a; border-color: #0f172a;">
+          <i class="fas fa-sign-in-alt"></i> Access Command Center
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.75rem; font-size: 0.88rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        Are you a citizen? <a href="/login.html" style="color: var(--teal); font-weight: 700;">Citizen Portal Login &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    function toggleAdminPasswordVisibility() {
+      const pwdInput = document.getElementById('admin-password');
+      const eyeIcon = document.getElementById('admin-pwd-eye-icon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeIcon.className = 'fas fa-eye-slash';
+      } else {
+        pwdInput.type = 'password';
+        eyeIcon.className = 'fas fa-eye';
+      }
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('admin-email').value.trim();
+      const password = document.getElementById('admin-password').value;
+      const btn = document.getElementById('admin-login-btn');
+      const errorAlert = document.getElementById('admin-error-alert');
+      const errorText = document.getElementById('admin-error-text');
+
+      errorAlert.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating Officer...';
+
+      try {
+        const res = await api.post('/auth/admin-login', { email, password });
+        if (res.success && res.user && res.user.role === 'Admin') {
+          // Clear previous citizen session & store admin credentials
+          api.clearAuth();
+          api.setToken(res.token);
+          api.setUser(res.user);
+          showToast(`Welcome Administrator ${res.user.name}! Redirecting to Command Center...`, 'success');
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirect = urlParams.get('redirect');
+
+          setTimeout(() => {
+            if (redirect && redirect.startsWith('/') && !redirect.includes('login')) {
+              window.location.href = redirect;
+            } else {
+              window.location.href = '/admin-dashboard.html';
+            }
+          }, 800);
+        } else {
+          throw new Error(res.message || 'Access Denied: Administrator privileges required.');
+        }
+      } catch (err) {
+        const errMsg = err.message || 'Authentication failed. Please verify administrator credentials.';
+        errorText.textContent = errMsg;
+        errorAlert.style.display = 'block';
+        showToast(errMsg, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Command Center';
+      }
+    }
+
+    // If already logged in as Admin, redirect straight to admin dashboard
+    window.addEventListener('DOMContentLoaded', () => {
+      if (api.isTokenValid()) {
+        const user = api.getUser();
+        if (user && user.role === 'Admin') {
+          window.location.href = '/admin-dashboard.html';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

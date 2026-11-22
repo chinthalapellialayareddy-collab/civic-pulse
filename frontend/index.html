@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicPulse – AI-Powered Smart Civic Issue Detection & Accountability Platform</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+  <header id="main-header"></header>
+
+  <!-- Hero Section -->
+  <section style="background: linear-gradient(135deg, var(--primary-navy-dark) 0%, var(--primary-navy) 60%, var(--primary-navy-light) 100%); color: white; padding: 5.5rem 1.5rem 4rem; position: relative; overflow: hidden;">
+    <!-- Abstract glowing circles in background -->
+    <div style="position: absolute; top: -100px; right: -80px; width: 450px; height: 450px; background: radial-gradient(circle, rgba(13,148,136,0.3) 0%, rgba(0,0,0,0) 70%); border-radius: 50%;"></div>
+    <div style="position: absolute; bottom: -80px; left: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, rgba(0,0,0,0) 70%); border-radius: 50%;"></div>
+
+    <div class="cp-container" style="position: relative; z-index: 2; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3rem; align-items: center;">
+      <div>
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 0.35rem 0.9rem; border-radius: 50px; margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 600; color: #38bdf8;">
+          <i class="fas fa-microchip"></i> Next-Gen Civic AI & Geospatial Tracking
+        </div>
+        <h1 style="font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -1px;" data-i18n="hero_title">
+          Your City. Your Voice. Our Responsibility.
+        </h1>
+        <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 2.25rem; max-width: 580px; line-height: 1.6;" data-i18n="hero_subtitle">
+          Report civic problems, track their progress in real-time, and help build a cleaner, safer, and smarter community.
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="/report-issue.html" class="btn btn-primary" style="padding: 0.85rem 1.85rem; font-size: 1.05rem;" data-i18n="btn_report_issue">
+            <i class="fas fa-plus-circle"></i> Report an Issue
+          </a>
+          <a href="/public-issues.html" class="btn btn-secondary" style="padding: 0.85rem 1.85rem; font-size: 1.05rem;" data-i18n="btn_explore_issues">
+            <i class="fas fa-compass"></i> Explore Public Issues
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Visual Representation -->
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(10px); box-shadow: var(--shadow-xl);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+          <div style="font-weight: 700; color: #ffffff; font-size: 1rem;"><i class="fas fa-satellite-dish" style="color: var(--teal-light);"></i> Live Municipal Radar</div>
+          <span class="status-badge InProgress" style="font-size: 0.7rem;"><i class="fas fa-circle-notch fa-spin"></i> Real-time Feed</span>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.85); border-radius: var(--radius-md); padding: 1rem; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <span class="priority-badge priority-High" style="margin-bottom: 0.4rem;">High Priority</span>
+              <div style="font-weight: 700; font-size: 0.95rem; color: #f8fafc;">Road Crater & Cavity</div>
+              <div style="font-size: 0.8rem; color: #94a3b8;"><i class="fas fa-map-marker-alt" style="color: var(--red);"></i> Cyber Towers, Hyderabad</div>
+            </div>
+            <span class="status-badge InProgress">In Progress</span>
+          </div>
+          <div style="margin-top: 0.85rem; background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; overflow: hidden;">
+            <div style="background: linear-gradient(90deg, var(--teal), var(--bright-blue)); width: 68%; height: 100%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-top: 0.35rem;">
+            <span>AI Category Verified</span>
+            <span>Ground Crew Dispatched</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div style="background: rgba(255,255,255,0.06); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Duplicate Detection</div>
+            <div style="font-weight: 700; color: #38bdf8; font-size: 1.1rem;">600m Radius</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.06); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Before-After Audit</div>
+            <div style="font-weight: 700; color: #34d399; font-size: 1.1rem;">100% Photo Proof</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Database Statistics Section -->
+  <section style="margin-top: -2.5rem; position: relative; z-index: 5;">
+    <div class="cp-container">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-info">
+            <h3 id="stat-total-issues">0</h3>
+            <p data-i18n="stat_total">Total Reported Issues</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+        </div>
+
+        <div class="stat-card green">
+          <div class="stat-info">
+            <h3 id="stat-resolved-issues">0</h3>
+            <p data-i18n="stat_resolved">Issues Resolved</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-check-double"></i>
+          </div>
+        </div>
+
+        <div class="stat-card orange">
+          <div class="stat-info">
+            <h3 id="stat-inprogress-issues">0</h3>
+            <p data-i18n="stat_in_progress">In Progress</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+        </div>
+
+        <div class="stat-card teal">
+          <div class="stat-info">
+            <h3 id="stat-locations">0</h3>
+            <p data-i18n="stat_locations">Active Locations</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-map-marked-alt"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem Categories Section -->
+  <section style="padding: 4rem 1.5rem; background: var(--bg-slate);">
+    <div class="cp-container">
+      <div style="text-align: center; max-width: 650px; margin: 0 auto 3rem;">
+        <span class="status-badge Assigned" style="margin-bottom: 0.5rem; font-size: 0.8rem;">MUNICIPAL DOMAINS</span>
+        <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--primary-navy);">Core Problem Categories</h2>
+        <p style="color: var(--text-muted);">CivicPulse routes each issue to specialized municipal engineering departments with intelligent AI prioritization.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div class="cp-card" style="text-align: center;">
+          <div style="width: 60px; height: 60px; background: #eff6ff; color: var(--bright-blue); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem;">
+            <i class="fas fa-road"></i>
+          </div>
+          <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;" data-i18n="cat_road">Road Damage</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Potholes, broken medians, asphalt erosion, dangerous craters and cave-ins.</p>
+        </div>
+
+        <div class="cp-card" style="text-align: center;">
+          <div style="width: 60px; height: 60px; background: #ecfdf5; color: var(--green); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem;">
+            <i class="fas fa-trash-alt"></i>
+          </div>
+          <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;" data-i18n="cat_garbage">Garbage Overflow</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Uncollected street garbage, overflowing municipal dumpsters, litter accumulation.</p>
+        </div>
+
+        <div class="cp-card" style="text-align: center;">
+          <div style="width: 60px; height: 60px; background: #e0f2fe; color: #0284c7; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem;">
+            <i class="fas fa-faucet-drip"></i>
+          </div>
+          <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;" data-i18n="cat_water">Water Leakage</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Clean pipeline bursts, municipal valve leaks, water supply pressure drop.</p>
+        </div>
+
+        <div class="cp-card" style="text-align: center;">
+          <div style="width: 60px; height: 60px; background: #fef3c7; color: var(--orange); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem;">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;" data-i18n="cat_light">Streetlight Failure</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Non-working junction lights, broken electrical poles, dark vulnerable stretches.</p>
+        </div>
+
+        <div class="cp-card" style="text-align: center;">
+          <div style="width: 60px; height: 60px; background: #fee2e2; color: var(--red); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem;">
+            <i class="fas fa-water"></i>
+          </div>
+          <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;" data-i18n="cat_drainage">Drainage Problems</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Open hazardous manholes, sewage blockages, rainwater stagnation on roads.</p>
+        </div>
+
+        <div class="cp-card" style="text-align: center;">
+          <div style="width: 60px; height: 60px; background: #f3e8ff; color: var(--purple); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem;">
+            <i class="fas fa-archway"></i>
+          </div>
+          <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;" data-i18n="cat_infra">Public Infrastructure</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Broken bus stops, footpaths, fallen branches, damaged public park amenities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section style="padding: 4rem 1.5rem; background: white; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <div class="cp-container">
+      <div style="text-align: center; max-width: 650px; margin: 0 auto 3rem;">
+        <span class="status-badge Resolved" style="margin-bottom: 0.5rem; font-size: 0.8rem;">WORKFLOW</span>
+        <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--primary-navy);">How CivicPulse Works</h2>
+        <p style="color: var(--text-muted);">From snapshot to verified resolution in five seamless, accountable milestones.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; text-align: center;">
+        <div style="padding: 1rem;">
+          <div style="width: 50px; height: 50px; background: var(--primary-navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem;">1</div>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Citizen Reports</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Snap a photo, pick coordinates on Leaflet map, let AI auto-classify priority.</p>
+        </div>
+
+        <div style="padding: 1rem;">
+          <div style="width: 50px; height: 50px; background: var(--teal); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem;">2</div>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Duplicate Check</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Algorithmic proximity and category analysis checks if neighbors reported it.</p>
+        </div>
+
+        <div style="padding: 1rem;">
+          <div style="width: 50px; height: 50px; background: var(--bright-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem;">3</div>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Department Action</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Municipal admin allocates the complaint to the exact responsible authority.</p>
+        </div>
+
+        <div style="padding: 1rem;">
+          <div style="width: 50px; height: 50px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem;">4</div>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Live Timeline</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Citizens receive real-time notifications and email updates at every step.</p>
+        </div>
+
+        <div style="padding: 1rem;">
+          <div style="width: 50px; height: 50px; background: var(--green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem;">5</div>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Verified Repair</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Resolution photo uploaded by engineering team for public accountability.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Public Issues -->
+  <section style="padding: 4rem 1.5rem; background: var(--bg-slate);">
+    <div class="cp-container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+        <div>
+          <span class="status-badge Assigned" style="margin-bottom: 0.5rem; font-size: 0.8rem;">TRANSPARENT TRACKING</span>
+          <h2 style="font-size: 2rem; font-weight: 800; color: var(--primary-navy);" data-i18n="recent_issues">Recent Public Issues</h2>
+        </div>
+        <a href="/public-issues.html" class="btn btn-outline btn-sm">
+          View All <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div id="recent-issues-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div style="text-align: center; grid-column: 1/-1; padding: 2rem;">
+          <i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--teal);"></i>
+          <p style="margin-top: 0.5rem; color: var(--text-muted);">Fetching civic issues...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    // Load Live Statistics & Recent Issues from Backend
+    async function loadHomeData() {
+      try {
+        const res = await api.get('/public/statistics');
+        if (res.success) {
+          const stats = res.stats;
+          document.getElementById('stat-total-issues').textContent = stats.totalIssues || 0;
+          document.getElementById('stat-resolved-issues').textContent = stats.resolvedIssues || 0;
+          document.getElementById('stat-inprogress-issues').textContent = stats.inProgressIssues || 0;
+          document.getElementById('stat-locations').textContent = stats.activeLocations || 0;
+
+          // Render Recent Issues
+          const container = document.getElementById('recent-issues-container');
+          if (res.recentIssues && res.recentIssues.length > 0) {
+            container.innerHTML = res.recentIssues.map(issue => `
+              <div class="cp-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="height: 180px; background: #cbd5e1; position: relative;">
+                  <img src="${issue.image_url || 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600'}" alt="${issue.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                  <span class="status-badge ${issue.status.replace(/\s+/g, '')}" style="position: absolute; top: 12px; right: 12px;">
+                    ${issue.status}
+                  </span>
+                </div>
+                <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column;">
+                  <div style="font-size: 0.75rem; color: var(--teal); font-weight: 700; margin-bottom: 0.35rem; text-transform: uppercase;">
+                    ${issue.category} &bull; ${issue.complaint_id}
+                  </div>
+                  <h4 style="font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--primary-navy); line-height: 1.3;">
+                    ${issue.title}
+                  </h4>
+                  <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                    <i class="fas fa-map-marker-alt" style="color: var(--red);"></i> ${issue.address}
+                  </p>
+                  <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.75rem; color: var(--text-light);">${new Date(issue.created_at).toLocaleDateString()}</span>
+                    <a href="/complaint-details?id=${issue.complaint_id}" onclick="sessionStorage.setItem('current_tracking_id', '${issue.complaint_id}'); localStorage.setItem('current_tracking_id', '${issue.complaint_id}');" class="btn btn-outline btn-sm">
+                      Track <i class="fas fa-chevron-right"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `).join('');
+          } else {
+            container.innerHTML = `
+              <div class="cp-card" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                <i class="fas fa-clipboard-check fa-3x" style="color: var(--green); margin-bottom: 1rem;"></i>
+                <h3>No Complaints Lodged Yet</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Be the first citizen to report a civic concern in your neighborhood!</p>
+                <a href="/report-issue.html" class="btn btn-primary">Report Issue Now</a>
+              </div>
+            `;
+          }
+        }
+      } catch (err) {
+        console.error('Home data load failed:', err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadHomeData);
+  </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review & Resolve Grievance – Admin CivicPulse</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header id="main-header"></header>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar" style="background: #0f172a;">
+      <div style="padding: 0.5rem 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.5rem;">
+        <div style="font-size: 0.8rem; color: #38bdf8; text-transform: uppercase; font-weight: 700;">
+          <i class="fas fa-shield-alt"></i> Municipal Admin
+        </div>
+        <div id="admin-user-name" style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">Control Room</div>
+      </div>
+      <a href="/admin-dashboard.html" class="sidebar-link">
+        <i class="fas fa-chart-line"></i> <span>Dashboard</span>
+      </a>
+      <a href="/manage-complaints.html" class="sidebar-link active">
+        <i class="fas fa-tasks"></i> <span>Manage Complaints</span>
+      </a>
+      <a href="/manage-departments.html" class="sidebar-link">
+        <i class="fas fa-building"></i> <span>Departments</span>
+      </a>
+      <a href="/manage-users.html" class="sidebar-link">
+        <i class="fas fa-users-cog"></i> <span>Citizen Directory</span>
+      </a>
+      <a href="/analytics.html" class="sidebar-link">
+        <i class="fas fa-chart-pie"></i> <span>Analytics & Reports</span>
+      </a>
+      <a href="/admin-settings.html" class="sidebar-link">
+        <i class="fas fa-sliders-h"></i> <span>Portal Settings</span>
+      </a>
+    </aside>
+
+    <main class="dashboard-content">
+      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <a href="/manage-complaints.html" class="btn btn-secondary btn-sm" style="color: var(--primary-navy); background: white; border: 1px solid var(--border-color); margin-bottom: 0.5rem;">
+            <i class="fas fa-arrow-left"></i> Back to Complaints
+          </a>
+          <h1 id="complaint-id-header" style="font-size: 1.8rem; font-weight: 800; color: var(--primary-navy);">
+            Reviewing Complaint
+          </h1>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 2rem;">
+        <!-- Left: Complaint Details & Citizen Info -->
+        <div>
+          <div class="cp-card" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span id="c-status-badge" class="status-badge Pending">Pending</span>
+              <span id="c-priority-badge" class="priority-badge priority-Medium">Medium</span>
+            </div>
+
+            <h2 id="c-title" style="font-size: 1.3rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 0.75rem;">
+              Complaint Title
+            </h2>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+              <div><strong>Category:</strong> <span id="c-category">Road Damage</span></div>
+              <div><strong>Lodged By:</strong> <span id="c-citizen-name">Citizen</span> (<span id="c-citizen-email">email</span>)</div>
+              <div><strong>Contact:</strong> <span id="c-citizen-mobile">N/A</span></div>
+              <div><strong>Address:</strong> <span id="c-address">Address</span></div>
+              <div><strong>Submitted:</strong> <span id="c-date">Date</span></div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Citizen Description</div>
+              <p id="c-description" style="color: #334155; font-size: 0.9rem; line-height: 1.5; margin-top: 0.25rem;"></p>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 0.35rem;">Initial Photograph</div>
+            <div style="height: 220px; border-radius: var(--radius-sm); overflow: hidden; background: #e2e8f0;">
+              <img id="c-image" src="#" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Administrative Operations & Before-and-After Resolution -->
+        <div>
+          <!-- Department & Status Workflow Card -->
+          <div class="cp-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              <i class="fas fa-route" style="color: var(--teal);"></i> 1. Department Routing & Status Progress
+            </h3>
+
+            <form id="assign-form" onsubmit="handleAssign(event)">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label">Assign Department</label>
+                  <select id="department-select" class="form-select" required>
+                    <option value="">Select Department</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Update Priority</label>
+                  <select id="priority-select" class="form-select">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Transition Status</label>
+                <select id="status-select" class="form-select">
+                  <option value="Pending">Pending</option>
+                  <option value="Reviewed">Reviewed</option>
+                  <option value="Assigned">Assigned</option>
+                  <option value="In Progress">In Progress</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Official Remarks for Citizen</label>
+                <input type="text" id="status-remarks" class="form-control" placeholder="e.g. Field team dispatched under supervisor Sharma">
+              </div>
+
+              <button type="submit" id="update-status-btn" class="btn btn-navy" style="width: 100%;">
+                <i class="fas fa-save"></i> Save Status & Notify Citizen
+              </button>
+            </form>
+          </div>
+
+          <!-- Final Resolution with Before-and-After Photo Upload -->
+          <div class="cp-card" style="border: 2px solid #86efac; background: #f0fdf4;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #166534; margin-bottom: 0.5rem;">
+              <i class="fas fa-check-double"></i> 2. Resolve & Upload Verified Repair Proof
+            </h3>
+            <p style="font-size: 0.85rem; color: #15803d; margin-bottom: 1.25rem;">
+              Before closing this grievance, upload the photo taken by the repair engineering team to establish before-and-after proof on the public record.
+            </p>
+
+            <form id="resolve-form" onsubmit="handleResolve(event)">
+              <div class="form-group">
+                <label class="form-label" style="color: #166534;">Resolution Photo (After Repair)</label>
+                <input type="file" id="resolution-image-input" class="form-control" accept="image/jpeg,image/png,image/webp" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" style="color: #166534;">Final Resolution Remarks</label>
+                <textarea id="resolution-remarks" class="form-control" placeholder="Details of materials used, date of repair, inspection sign-off..." required></textarea>
+              </div>
+
+              <button type="submit" id="resolve-btn" class="btn btn-success" style="width: 100%; font-size: 1rem; padding: 0.85rem;">
+                <i class="fas fa-shield-alt"></i> Complete Verified Resolution
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    const user = requireAuth('Admin');
+    if (user) {
+      document.getElementById('admin-user-name').textContent = user.name;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let complaintId = urlParams.get('id');
+    if (complaintId) {
+      sessionStorage.setItem('current_admin_complaint_id', complaintId.trim());
+      complaintId = complaintId.trim();
+    } else {
+      complaintId = sessionStorage.getItem('current_admin_complaint_id') || localStorage.getItem('current_admin_complaint_id');
+    }
+    let currentComplaintDbId = null;
+
+    async function loadComplaint() {
+      if (!complaintId) {
+        window.location.href = '/manage-complaints.html';
+        return;
+      }
+
+      try {
+        // Load Departments for dropdown
+        const deptRes = await api.get('/admin/departments');
+        if (deptRes.success) {
+          const deptSelect = document.getElementById('department-select');
+          deptSelect.innerHTML = '<option value="">Select Department</option>' + 
+            deptRes.departments.map(d => `<option value="${d.id}">${d.department_name}</option>`).join('');
+        }
+
+        const res = await api.get(`/complaints/${complaintId}`);
+        if (res.success) {
+          const c = res.complaint;
+          currentComplaintDbId = c.id;
+
+          document.getElementById('complaint-id-header').textContent = `Reviewing Complaint #${c.complaint_id}`;
+          document.getElementById('c-status-badge').className = `status-badge ${c.status.replace(/\s+/g, '')}`;
+          document.getElementById('c-status-badge').textContent = c.status;
+          document.getElementById('c-priority-badge').className = `priority-badge priority-${c.priority}`;
+          document.getElementById('c-priority-badge').textContent = `${c.priority} Priority`;
+
+          document.getElementById('c-title').textContent = c.title;
+          document.getElementById('c-category').textContent = c.category;
+          document.getElementById('c-citizen-name').textContent = c.citizen_name || 'Anonymous Citizen';
+          document.getElementById('c-citizen-email').textContent = c.citizen_email || 'N/A';
+          document.getElementById('c-citizen-mobile').textContent = c.citizen_mobile || 'N/A';
+          document.getElementById('c-address').textContent = c.address;
+          document.getElementById('c-date').textContent = new Date(c.created_at).toLocaleString();
+          document.getElementById('c-description').textContent = c.description;
+
+          document.getElementById('c-image').src = c.image_url || 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600';
+
+          if (c.department_id) {
+            document.getElementById('department-select').value = c.department_id;
+          }
+          document.getElementById('priority-select').value = c.priority;
+          document.getElementById('status-select').value = c.status === 'Resolved' ? 'In Progress' : c.status;
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function handleAssign(e) {
+      e.preventDefault();
+      const department_id = document.getElementById('department-select').value;
+      const priority = document.getElementById('priority-select').value;
+      const status = document.getElementById('status-select').value;
+      const remarks = document.getElementById('status-remarks').value;
+
+      try {
+        if (department_id) {
+          await api.patch(`/admin/complaints/${currentComplaintDbId}/assign`, {
+            department_id,
+            priority,
+            remarks
+          });
+        }
+        if (status) {
+          await api.patch(`/admin/complaints/${currentComplaintDbId}/status`, {
+            status,
+            remarks
+          });
+        }
+        showToast('Status and department routing updated. Citizen notified!', 'success');
+        loadComplaint();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function handleResolve(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('resolution-image-input');
+      const remarks = document.getElementById('resolution-remarks').value;
+      const btn = document.getElementById('resolve-btn');
+
+      if (!fileInput.files[0]) {
+        showToast('Resolution proof photograph is mandatory.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Finalizing Resolution...';
+
+      const formData = new FormData();
+      formData.append('resolution_image', fileInput.files[0]);
+      formData.append('remarks', remarks);
+
+      try {
+        const res = await api.post(`/admin/complaints/${currentComplaintDbId}/resolve`, formData);
+        if (res.success) {
+          showToast('Complaint resolved with before-and-after proof!', 'success');
+          setTimeout(() => {
+            window.location.href = `/complaint-details.html?id=${complaintId}`;
+          }, 1200);
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-shield-alt"></i> Complete Verified Resolution';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadComplaint);
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Registration – CivicPulse</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body style="background: linear-gradient(135deg, var(--bg-slate) 0%, #e2e8f0 100%); min-height: 100vh;">
+  <header id="main-header"></header>
+
+  <main class="cp-container" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 180px); padding: 2.5rem 1.5rem;">
+    <div class="cp-card" style="width: 100%; max-width: 480px; padding: 2.5rem; box-shadow: var(--shadow-xl);">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div class="cp-brand-logo" style="margin: 0 auto 1rem; width: 48px; height: 48px; font-size: 1.5rem;">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--primary-navy);" data-i18n="nav_register">Create Citizen Account</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.35rem;">Join your neighborhood community & resolve civic issues</p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div style="position: relative;">
+            <input type="text" id="name" class="form-control" placeholder="e.g. Ramesh Varma" required style="padding-left: 2.75rem;">
+            <i class="fas fa-user" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div style="position: relative;">
+            <input type="email" id="email" class="form-control" placeholder="name@example.com" required style="padding-left: 2.75rem;">
+            <i class="fas fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mobile Number (Optional)</label>
+          <div style="position: relative;">
+            <input type="tel" id="mobile" class="form-control" placeholder="e.g. 9876543210" style="padding-left: 2.75rem;">
+            <i class="fas fa-phone" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div style="position: relative;">
+            <input type="password" id="password" class="form-control" placeholder="At least 6 characters" minlength="6" required style="padding-left: 2.75rem;">
+            <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div style="position: relative;">
+            <input type="password" id="confirmPassword" class="form-control" placeholder="Repeat your password" minlength="6" required style="padding-left: 2.75rem;">
+            <i class="fas fa-shield-alt" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <button type="submit" id="reg-btn" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 1rem; margin-top: 0.5rem;">
+          <i class="fas fa-check-circle"></i> Complete Registration
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        Already registered? <a href="/login.html" style="color: var(--bright-blue); font-weight: 700;">Sign in here</a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    async function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const mobile = document.getElementById('mobile').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const btn = document.getElementById('reg-btn');
+
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match. Please verify.', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Password must be at least 6 characters.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Registering...';
+
+      try {
+        const res = await api.post('/auth/register', { name, email, mobile, password, confirmPassword });
+        if (res.success) {
+          // Clear any stale auth and set new credentials
+          api.clearAuth();
+          api.setToken(res.token);
+          api.setUser(res.user);
+          showToast('Account created successfully! Welcome to CivicPulse.', 'success');
+          setTimeout(() => {
+            window.location.href = '/citizen-dashboard.html';
+          }, 900);
+        }
+      } catch (err) {
+        showToast(err.message || 'Registration failed. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Registration';
+      }
+    }
+  </script>
+</body>
+</html>

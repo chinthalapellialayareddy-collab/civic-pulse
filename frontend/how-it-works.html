@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How CivicPulse Works – Complete Workflow</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header id="main-header"></header>
+
+  <div style="background: linear-gradient(135deg, var(--primary-navy-dark), var(--primary-navy)); color: white; padding: 3.5rem 1.5rem 3rem;">
+    <div class="cp-container" style="text-align: center; max-width: 800px;">
+      <span class="status-badge Assigned" style="margin-bottom: 0.75rem;">STEP-BY-STEP GUIDE</span>
+      <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">How CivicPulse Operates</h1>
+      <p style="font-size: 1.1rem; color: #cbd5e1;">A streamlined pipeline engineered to ensure accountability, prevent duplicate tasks, and deliver verifiable results.</p>
+    </div>
+  </div>
+
+  <main class="cp-container" style="padding: 3.5rem 1.5rem;">
+    <div style="max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem;">
+      <!-- Step 1 -->
+      <div class="cp-card" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--teal); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">1</div>
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Issue Reporting with Geolocation & Photos</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Citizens snap a photo of the road damage, water leak, or overflowing garbage. The platform uses the Browser Geolocation API or Nominatim geocoding to automatically pinpoint exact latitude and longitude on OpenStreetMap.</p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="cp-card" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--purple); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">2</div>
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">AI Classification & Prioritization</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Powered by Google Gemini (with resilient rule-based fallbacks), the system suggests the appropriate category, assigns an urgency priority score (Low to Critical), and produces an executive summary for triage officials.</p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="cp-card" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--bright-blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">3</div>
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Duplicate Cluster Detection & Community Support</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Before logging, the system scans active complaints within a 600m radius using the Haversine formula. If neighbors already reported it, citizens can "Upvote/Support" the issue, boosting urgency rather than cluttering municipal dispatch.</p>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="cp-card" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--orange); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">4</div>
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Department Routing & Dispatch</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Municipal controllers assign the ticket to specialized teams: Roads & Bridges, Solid Waste Management, or Water Works. Real-time updates notify citizens in-app and via Resend email.</p>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="cp-card" style="display: flex; gap: 1.5rem; align-items: flex-start;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--green); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">5</div>
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Before-and-After Verified Resolution</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem;">Once ground crews fix the problem, administrators upload the official resolution photograph. The original condition and completed repair are shown side-by-side on the public tracker for 100% civic accountability.</p>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="/report-issue.html" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1.05rem;">
+          <i class="fas fa-plus-circle"></i> Try It Now – Report an Issue
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+</body>
+</html>

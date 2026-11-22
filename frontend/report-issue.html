@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Civic Issue – CivicPulse</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    #picker-map {
+      height: 280px;
+      width: 100%;
+      border-radius: var(--radius-md);
+      margin-top: 0.75rem;
+      border: 1.5px solid var(--border-color);
+    }
+    .preview-box {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      background: #f8fafc;
+      transition: var(--transition);
+    }
+    .preview-box:hover {
+      border-color: var(--bright-blue);
+      background: #eff6ff;
+    }
+    .ai-pill {
+      background: linear-gradient(135deg, #ede9fe, #dbeafe);
+      border: 1px solid #c4b5fd;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header id="main-header"></header>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div style="padding: 0.5rem 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.5rem;">
+        <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase;">Citizen Portal</div>
+        <div id="user-display-name" style="font-weight: 700; color: #ffffff; font-size: 1.1rem;">Citizen</div>
+      </div>
+      <a href="/citizen-dashboard.html" class="sidebar-link">
+        <i class="fas fa-columns"></i> <span>Overview</span>
+      </a>
+      <a href="/report-issue.html" class="sidebar-link active">
+        <i class="fas fa-plus-circle" style="color: var(--teal-light);"></i> <span>Report New Issue</span>
+      </a>
+      <a href="/my-complaints.html" class="sidebar-link">
+        <i class="fas fa-folder-open"></i> <span>My Complaints</span>
+      </a>
+      <a href="/notifications.html" class="sidebar-link">
+        <i class="fas fa-bell"></i> <span>Notifications</span>
+      </a>
+      <a href="/profile.html" class="sidebar-link">
+        <i class="fas fa-user-cog"></i> <span>Profile & Settings</span>
+      </a>
+    </aside>
+
+    <!-- Main Content Form -->
+    <main class="dashboard-content">
+      <div style="max-width: 900px; margin: 0 auto;">
+        <div style="margin-bottom: 1.75rem;">
+          <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--primary-navy);">Lodge a Civic Grievance</h1>
+          <p style="color: var(--text-muted);">Provide issue details, photograph and GPS coordinates for fast municipal response.</p>
+        </div>
+
+        <!-- AI Assistant Status Banner -->
+        <div class="ai-pill">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--purple); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--primary-navy);">AI Intelligence Active</div>
+            <div id="ai-suggestion-text" style="font-size: 0.85rem; color: #475569;">
+              Type your problem description below. Gemini AI will automatically suggest the category & urgency priority.
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="triggerAiAssistance()" style="border-color: var(--purple); color: var(--purple); background: white;">
+            <i class="fas fa-wand-magic-sparkles"></i> AI Auto-Fill
+          </button>
+        </div>
+
+        <!-- Duplicate Warning Modal or Inline Callout -->
+        <div id="duplicate-warning-banner" style="display: none; background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <i class="fas fa-exclamation-triangle fa-2x" style="color: #b45309;"></i>
+            <div style="flex: 1;">
+              <h4 style="font-size: 1.05rem; font-weight: 700; color: #92400e; margin-bottom: 0.25rem;">
+                Possible Duplicate Civic Issue Nearby!
+              </h4>
+              <p style="font-size: 0.85rem; color: #78350f; margin-bottom: 0.75rem;">
+                A similar grievance was already reported within 600m. You can support the existing ticket to increase its municipal priority, or proceed if this is a distinct issue.
+              </p>
+              <div id="duplicate-candidates-list" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <form id="complaint-form" onsubmit="submitComplaint(event)">
+          <div class="cp-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              <i class="fas fa-pencil-alt" style="color: var(--teal);"></i> 1. Problem Description
+            </h3>
+
+            <div class="form-group">
+              <label class="form-label">Grievance Title *</label>
+              <input type="text" id="title" class="form-control" placeholder="e.g. Deep pothole causing accidents near Cyber Towers" required onblur="checkAiSuggestion()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select id="category" class="form-select" required>
+                  <option value="">Select Category</option>
+                  <option value="Road Damage">Road Damage</option>
+                  <option value="Garbage Overflow">Garbage Overflow</option>
+                  <option value="Water Leakage">Water Leakage</option>
+                  <option value="Streetlight Failure">Streetlight Failure</option>
+                  <option value="Drainage Problems">Drainage Problems</option>
+                  <option value="Public Infrastructure">Public Infrastructure</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Urgency Priority</label>
+                <select id="priority" class="form-select">
+                  <option value="Low">Low (Cosmetic/Minor)</option>
+                  <option value="Medium" selected>Medium (Standard Turnaround)</option>
+                  <option value="High">High (Safety Concern/Disruption)</option>
+                  <option value="Critical">Critical (Immediate Hazard/Flooding)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.5rem;">
+                <label class="form-label" style="margin: 0;">Detailed Description *</label>
+                <button type="button" class="btn btn-sm" id="btn-ai-improve" onclick="triggerAiImproveDescription()" style="background: linear-gradient(135deg, #ede9fe, #dbeafe); border: 1.5px solid #c4b5fd; color: #6b21a8; font-weight: 700; padding: 0.25rem 0.85rem; border-radius: 999px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease;">
+                  <i class="fas fa-wand-magic-sparkles"></i> Improve with AI
+                </button>
+              </div>
+              <textarea id="description" class="form-control" placeholder="Describe the severity, duration, and landmarks to help municipal ground engineers locate the problem quickly..." required onblur="checkAiSuggestion()"></textarea>
+              
+              <!-- AI Description Improvement Preview Box -->
+              <div id="ai-improve-box" style="display: none; background: #faf5ff; border: 1.5px solid #d8b4fe; border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.35rem;">
+                  <span style="font-weight: 700; color: #6b21a8; font-size: 0.85rem;">
+                    <i class="fas fa-robot"></i> Enhanced Grievance Draft (<span id="ai-improve-source">AI</span>)
+                  </span>
+                  <span style="font-size: 0.75rem; color: #7e22ce; font-weight: 600;">Review before saving</span>
+                </div>
+                <p id="ai-improve-text" style="font-size: 0.9rem; color: #3b0764; line-height: 1.55; margin-bottom: 0.85rem; background: white; padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid #e9d5ff;"></p>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="dismissAiImprove()" style="font-size: 0.8rem; padding: 0.3rem 0.85rem;">
+                    Discard
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary" onclick="applyAiImprove()" style="background: #7c3aed; border-color: #7c3aed; font-size: 0.8rem; padding: 0.3rem 0.85rem;">
+                    <i class="fas fa-check"></i> Apply to Form
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Upload Card -->
+          <div class="cp-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+              <i class="fas fa-camera" style="color: var(--bright-blue);"></i> 2. Photograph Evidence
+            </h3>
+
+            <div class="preview-box" onclick="document.getElementById('image-input').click()">
+              <input type="file" id="image-input" accept="image/jpeg,image/png,image/webp" style="display: none;" onchange="previewImage(event)">
+              <div id="upload-placeholder">
+                <i class="fas fa-cloud-upload-alt fa-3x" style="color: var(--bright-blue); margin-bottom: 0.75rem;"></i>
+                <div style="font-weight: 700; font-size: 1rem; color: var(--primary-navy);">Click to upload or take a photograph</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Supported formats: JPG, JPEG, PNG, WEBP (Max 5MB)</div>
+              </div>
+              <div id="image-preview-container" style="display: none; position: relative;">
+                <img id="image-preview" src="#" alt="Uploaded Evidence" style="max-height: 220px; border-radius: var(--radius-sm); margin: 0 auto;">
+                <div style="margin-top: 0.75rem;">
+                  <span class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); resetImage();">
+                    <i class="fas fa-times"></i> Remove Photo
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Geolocation & Map Picker Card -->
+          <div class="cp-card" style="margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); margin: 0;">
+                <i class="fas fa-map-marker-alt" style="color: var(--red);"></i> 3. Incident Location & Map Pin
+              </h3>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="detectCurrentLocation()">
+                <i class="fas fa-crosshairs"></i> Use GPS Location
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Search Address / Landmark</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="address-search" class="form-control" placeholder="Search street, locality or landmark..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchAddressNominatim();}">
+                <button type="button" class="btn btn-navy" onclick="searchAddressNominatim()">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Selected Address *</label>
+                <input type="text" id="address" class="form-control" placeholder="Pinpointed street address" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Latitude</label>
+                <input type="number" step="any" id="latitude" class="form-control" placeholder="e.g. 19.569698" oninput="onManualCoordinateChange()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Longitude</label>
+                <input type="number" step="any" id="longitude" class="form-control" placeholder="e.g. 78.428300" oninput="onManualCoordinateChange()">
+              </div>
+            </div>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+              <i class="fas fa-info-circle"></i> Click anywhere on the map to manually correct the pin location:
+            </div>
+            <div id="picker-map"></div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="/citizen-dashboard.html" class="btn btn-secondary">Cancel</a>
+            <button type="submit" id="submit-btn" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1.05rem;">
+              <i class="fas fa-paper-plane"></i> Submit Grievance
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <footer id="main-footer"></footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    const user = requireAuth('Citizen');
+    if (user) {
+      document.getElementById('user-display-name').textContent = user.name;
+    }
+
+    let pickerMap, marker;
+    let selectedImageFile = null;
+
+    function initPickerMap() {
+      // Default to Hyderabad central
+      const defaultLat = 17.3850;
+      const defaultLon = 78.4867;
+
+      pickerMap = L.map('picker-map').setView([defaultLat, defaultLon], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(pickerMap);
+
+      marker = L.marker([defaultLat, defaultLon], { draggable: true }).addTo(pickerMap);
+
+      setCoordinates(defaultLat, defaultLon, 'Hyderabad Central, Telangana');
+
+      // Map click event
+      pickerMap.on('click', (e) => {
+        setCoordinates(e.latlng.lat, e.latlng.lng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+      });
+
+      // Marker drag event
+      marker.on('dragend', (e) => {
+        const pos = e.target.getLatLng();
+        setCoordinates(pos.lat, pos.lng);
+        reverseGeocode(pos.lat, pos.lng);
+      });
+    }
+
+    function setCoordinates(lat, lon, addr = null) {
+      document.getElementById('latitude').value = parseFloat(lat).toFixed(6);
+      document.getElementById('longitude').value = parseFloat(lon).toFixed(6);
+      marker.setLatLng([lat, lon]);
+      if (addr) {
+        document.getElementById('address').value = addr;
+      }
+      checkDuplicates();
+    }
+
+    let manualCoordTimeout = null;
+    function onManualCoordinateChange() {
+      clearTimeout(manualCoordTimeout);
+      manualCoordTimeout = setTimeout(() => {
+        const lat = parseFloat(document.getElementById('latitude').value);
+        const lon = parseFloat(document.getElementById('longitude').value);
+
+        if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+          marker.setLatLng([lat, lon]);
+          pickerMap.setView([lat, lon], 15);
+          reverseGeocode(lat, lon);
+          checkDuplicates();
+        }
+      }, 500);
+    }
+
+    async function reverseGeocode(lat, lon) {
+      try {
+        const res = await api.get(`/public/geocode/reverse?lat=${lat}&lon=${lon}`);
+        if (res.success && res.displayName) {
+          document.getElementById('address').value = res.displayName;
+        }
+      } catch (e) {
+        console.warn('Reverse geocoding err:', e);
+      }
+    }
+
+    async function searchAddressNominatim() {
+      const q = document.getElementById('address-search').value;
+      if (!q || q.length < 3) {
+        showToast('Please type at least 3 characters to search address.', 'warning');
+        return;
+      }
+
+      showToast('Searching geocodes...', 'info');
+      try {
+        const res = await api.get(`/public/geocode/search?q=${encodeURIComponent(q)}`);
+        if (res.success && res.results.length > 0) {
+          const first = res.results[0];
+          pickerMap.setView([first.lat, first.lon], 16);
+          setCoordinates(first.lat, first.lon, first.displayName);
+          showToast('Location matched & updated on map.', 'success');
+        } else {
+          showToast('No matching address found. Try manual map pin.', 'warning');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function detectCurrentLocation() {
+      if (!navigator.geolocation) {
+        showToast('Browser does not support geolocation.', 'error');
+        return;
+      }
+      showToast('Fetching GPS coordinates...', 'info');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          pickerMap.setView([lat, lon], 16);
+          setCoordinates(lat, lon);
+          reverseGeocode(lat, lon);
+          showToast('GPS Location locked!', 'success');
+        },
+        (err) => {
+          showToast('Could not fetch location. Permission denied or GPS timeout.', 'warning');
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('File size exceeds 5MB limit.', 'error');
+        return;
+      }
+
+      selectedImageFile = file;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('image-preview').src = e.target.result;
+        document.getElementById('upload-placeholder').style.display = 'none';
+        document.getElementById('image-preview-container').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetImage() {
+      selectedImageFile = null;
+      document.getElementById('image-input').value = '';
+      document.getElementById('upload-placeholder').style.display = 'block';
+      document.getElementById('image-preview-container').style.display = 'none';
+    }
+
+    // AI Classification & Priority Suggestion
+    async function triggerAiAssistance() {
+      const title = document.getElementById('title').value;
+      const desc = document.getElementById('description').value;
+
+      if (!title && !desc) {
+        showToast('Please type a title or description first for AI evaluation.', 'warning');
+        return;
+      }
+
+      showToast('Running AI categorization & triage...', 'info');
+      try {
+        const res = await api.post('/ai/classify', { title, description: desc });
+        if (res.success && res.data) {
+          const data = res.data;
+          if (data.category) {
+            document.getElementById('category').value = data.category;
+          }
+          if (data.priority) {
+            document.getElementById('priority').value = data.priority;
+          }
+          document.getElementById('ai-suggestion-text').innerHTML = `
+            <strong>${data.source}:</strong> Categorized as <em>${data.category}</em> (Urgency: <em>${data.priority}</em>). ${data.reason || ''}
+          `;
+          showToast(`AI suggestion applied: ${data.category}`, 'success');
+          checkDuplicates();
+        }
+      } catch (err) {
+        console.warn('AI assistance err:', err);
+      }
+    }
+
+    function checkAiSuggestion() {
+      const title = document.getElementById('title').value;
+      const desc = document.getElementById('description').value;
+      if ((title.length > 5 || desc.length > 10) && !document.getElementById('category').value) {
+        triggerAiAssistance();
+      }
+    }
+
+    // AI Description Improvement
+    let pendingImprovedDescription = '';
+    async function triggerAiImproveDescription() {
+      const desc = document.getElementById('description').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const category = document.getElementById('category').value;
+      const btn = document.getElementById('btn-ai-improve');
+
+      if (!desc || desc.length < 5) {
+        showToast('Please type a brief draft first before clicking Improve with AI.', 'warning');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Polishing...';
+
+      try {
+        const lang = (window.i18n && window.i18n.currentLang) || 'en';
+        const res = await api.post('/ai/improve-description', {
+          description: desc,
+          title,
+          category,
+          language: lang
+        });
+
+        if (res.success && res.improvedText) {
+          pendingImprovedDescription = res.improvedText;
+          document.getElementById('ai-improve-source').textContent = res.source || 'AI Engine';
+          document.getElementById('ai-improve-text').textContent = res.improvedText;
+          document.getElementById('ai-improve-box').style.display = 'block';
+          showToast('Draft enhanced! Review the suggestion below.', 'success');
+        } else {
+          showToast('Could not enhance description at this moment.', 'warning');
+        }
+      } catch (err) {
+        showToast(err.message || 'Error communicating with AI service.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Improve with AI';
+      }
+    }
+
+    function applyAiImprove() {
+      if (pendingImprovedDescription) {
+        document.getElementById('description').value = pendingImprovedDescription;
+        document.getElementById('ai-improve-box').style.display = 'none';
+        showToast('Enhanced description applied to grievance form!', 'success');
+        checkAiSuggestion();
+      }
+    }
+
+    function dismissAiImprove() {
+      document.getElementById('ai-improve-box').style.display = 'none';
+      pendingImprovedDescription = '';
+    }
+
+    // Duplicate Check
+    async function checkDuplicates() {
+      const lat = document.getElementById('latitude').value;
+      const lon = document.getElementById('longitude').value;
+      const category = document.getElementById('category').value;
+      const title = document.getElementById('title').value;
+
+      if (!lat || !lon) return;
+
+      try {
+        const res = await api.post('/complaints/check-duplicate', {
+          latitude: lat,
+          longitude: lon,
+          category,
+          title
+        });
+
+        const banner = document.getElementById('duplicate-warning-banner');
+        const list = document.getElementById('duplicate-candidates-list');
+
+        if (res.success && res.hasDuplicates) {
+          banner.style.display = 'block';
+          list.innerHTML = res.duplicates.map(d => `
+            <div style="background: white; border-radius: 6px; padding: 0.65rem 0.85rem; border: 1px solid #fde68a; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong style="color: #172554;">#${d.complaint.complaint_id}: ${d.complaint.title}</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">${d.reason} &bull; Status: <span class="status-badge ${d.complaint.status.replace(/\s+/g,'')}">${d.complaint.status}</span></div>
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" onclick="supportExistingIssue(${d.complaint.id})">
+                <i class="fas fa-thumbs-up"></i> Support Instead
+              </button>
+            </div>
+          `).join('');
+        } else {
+          banner.style.display = 'none';
+        }
+      } catch (e) {
+        console.warn('Duplicate check err:', e);
+      }
+    }
+
+    async function supportExistingIssue(complaintId) {
+      try {
+        const res = await api.post(`/complaints/${complaintId}/support`, {});
+        showToast(res.message, 'success');
+        setTimeout(() => window.location.href = '/citizen-dashboard.html', 1200);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Form Submission
+    async function submitComplaint(e) {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const category = document.getElementById('category').value;
+      const description = document.getElementById('description').value;
+      const priority = document.getElementById('priority').value;
+      const address = document.getElementById('address').value;
+      const latitude = document.getElementById('latitude').value;
+      const longitude = document.getElementById('longitude').value;
+      const btn = document.getElementById('submit-btn');
+
+      if (!category) {
+        showToast('Please select a category.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting Grievance...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('category', category);
+      formData.append('description', description);
+      formData.append('priority', priority);
+      formData.append('address', address);
+      formData.append('latitude', latitude);
+      formData.append('longitude', longitude);
+      if (selectedImageFile) {
+        formData.append('image', selectedImageFile);
+      }
+
+      try {
+        const res = await api.post('/complaints', formData);
+        if (res.success) {
+          showToast(`Grievance registered! Complaint ID: ${res.complaint.complaint_id}`, 'success');
+          setTimeout(() => {
+            sessionStorage.setItem('current_tracking_id', res.complaint.complaint_id);
+            localStorage.setItem('current_tracking_id', res.complaint.complaint_id);
+            window.location.href = `/complaint-details?id=${res.complaint.complaint_id}`;
+          }, 1200);
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Grievance';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initPickerMap);
+  </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Complaints – Admin CivicPulse</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header id="main-header"></header>
+
+  <div class="dashboard-layout">
+    <!-- Admin Sidebar -->
+    <aside class="sidebar" style="background: #0f172a;">
+      <div style="padding: 0.5rem 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.5rem;">
+        <div style="font-size: 0.8rem; color: #38bdf8; text-transform: uppercase; font-weight: 700;">
+          <i class="fas fa-shield-alt"></i> Municipal Admin
+        </div>
+        <div id="admin-user-name" style="font-weight: 700; color: #ffffff; font-size: 1.05rem;">Control Room</div>
+      </div>
+      <a href="/admin-dashboard.html" class="sidebar-link">
+        <i class="fas fa-chart-line"></i> <span>Dashboard</span>
+      </a>
+      <a href="/manage-complaints.html" class="sidebar-link active">
+        <i class="fas fa-tasks"></i> <span>Manage Complaints</span>
+      </a>
+      <a href="/manage-departments.html" class="sidebar-link">
+        <i class="fas fa-building"></i> <span>Departments</span>
+      </a>
+      <a href="/manage-users.html" class="sidebar-link">
+        <i class="fas fa-users-cog"></i> <span>Citizen Directory</span>
+      </a>
+      <a href="/analytics.html" class="sidebar-link">
+        <i class="fas fa-chart-pie"></i> <span>Analytics & Reports</span>
+      </a>
+      <a href="/admin-settings.html" class="sidebar-link">
+        <i class="fas fa-sliders-h"></i> <span>Portal Settings</span>
+      </a>
+    </aside>
+
+    <!-- Admin Content -->
+    <main class="dashboard-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--primary-navy);">Municipal Complaints Registry</h1>
+          <p style="color: var(--text-muted);">Assign engineering departments, update milestones, and review ground photographs</p>
+        </div>
+        <button onclick="exportToCsv()" class="btn btn-secondary btn-sm" style="color: var(--primary-navy); background: white; border: 1px solid var(--border-color);">
+          <i class="fas fa-download"></i> Export CSV
+        </button>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div class="cp-card" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 1rem; align-items: center;">
+          <div>
+            <input type="text" id="admin-search" class="form-control" placeholder="Search by ID, title, citizen name or location..." oninput="handleSearch()">
+          </div>
+          <div>
+            <select id="admin-category" class="form-select" onchange="loadComplaints()">
+              <option value="All">All Categories</option>
+              <option value="Road Damage">Road Damage</option>
+              <option value="Garbage Overflow">Garbage Overflow</option>
+              <option value="Water Leakage">Water Leakage</option>
+              <option value="Streetlight Failure">Streetlight Failure</option>
+              <option value="Drainage Problems">Drainage Problems</option>
+              <option value="Public Infrastructure">Public Infrastructure</option>
+            </select>
+          </div>
+          <div>
+            <select id="admin-status" class="form-select" onchange="loadComplaints()">
+              <option value="All">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Reviewed">Reviewed</option>
+              <option value="Assigned">Assigned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div>
+            <select id="admin-priority" class="form-select" onchange="loadComplaints()">
+              <option value="All">All Priorities</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div>
+            <button class="btn btn-secondary" onclick="resetFilters()">
+              <i class="fas fa-redo"></i> Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complaints Table -->
+      <div class="cp-card" style="padding: 0; overflow: hidden;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                <th style="padding: 0.85rem 1rem;">ID</th>
+                <th style="padding: 0.85rem 1rem;">Issue & Citizen</th>
+                <th style="padding: 0.85rem 1rem;">Category</th>
+                <th style="padding: 0.85rem 1rem;">Priority</th>
+                <th style="padding: 0.85rem 1rem;">Department</th>
+                <th style="padding: 0.85rem 1rem;">Status</th>
+                <th style="padding: 0.85rem 1rem;">Date</th>
+                <th style="padding: 0.85rem 1rem; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="complaints-tbody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                  <i class="fas fa-circle-notch fa-spin"></i> Loading complaints...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="admin-pagination" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;"></div>
+    </main>
+  </div>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    const user = requireAuth('Admin');
+    if (user) {
+      document.getElementById('admin-user-name').textContent = user.name;
+    }
+
+    let currentPage = 1;
+    let searchTimeout = null;
+    let cachedComplaints = [];
+
+    function handleSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentPage = 1;
+        loadComplaints();
+      }, 350);
+    }
+
+    function resetFilters() {
+      document.getElementById('admin-search').value = '';
+      document.getElementById('admin-category').value = 'All';
+      document.getElementById('admin-status').value = 'All';
+      document.getElementById('admin-priority').value = 'All';
+      currentPage = 1;
+      loadComplaints();
+    }
+
+    async function loadComplaints() {
+      const search = document.getElementById('admin-search').value;
+      const category = document.getElementById('admin-category').value;
+      const status = document.getElementById('admin-status').value;
+      const priority = document.getElementById('admin-priority').value;
+
+      try {
+        const queryParams = new URLSearchParams({
+          page: currentPage,
+          limit: 12,
+          category,
+          status,
+          priority,
+          search
+        });
+
+        const res = await api.get(`/admin/complaints?${queryParams.toString()}`);
+        if (res.success) {
+          cachedComplaints = res.complaints;
+          const tbody = document.getElementById('complaints-tbody');
+
+          if (res.complaints.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                  No complaints found matching the criteria.
+                </td>
+              </tr>
+            `;
+            document.getElementById('admin-pagination').innerHTML = '';
+            return;
+          }
+
+          tbody.innerHTML = res.complaints.map(c => `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 0.85rem 1rem; font-weight: 700; color: var(--primary-navy);">${c.complaint_id}</td>
+              <td style="padding: 0.85rem 1rem;">
+                <div style="font-weight: 700; color: var(--primary-navy); max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  ${c.title}
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                  By: <strong>${c.citizen_name || 'Citizen'}</strong> (${c.citizen_email || ''})
+                </div>
+              </td>
+              <td style="padding: 0.85rem 1rem;">
+                <span class="status-badge Assigned" style="font-size: 0.75rem;">${c.category}</span>
+              </td>
+              <td style="padding: 0.85rem 1rem;">
+                <span class="priority-badge priority-${c.priority}">${c.priority}</span>
+              </td>
+              <td style="padding: 0.85rem 1rem; color: #475569; font-size: 0.85rem;">
+                ${c.department_name || '<em style="color: #94a3b8;">Unassigned</em>'}
+              </td>
+              <td style="padding: 0.85rem 1rem;">
+                <span class="status-badge ${c.status.replace(/\s+/g, '')}">${c.status}</span>
+              </td>
+              <td style="padding: 0.85rem 1rem; color: var(--text-muted); font-size: 0.8rem;">
+                ${new Date(c.created_at).toLocaleDateString()}
+              </td>
+              <td style="padding: 0.85rem 1rem; text-align: right;">
+                <a href="/admin-complaint-details.html?id=${c.complaint_id}" onclick="sessionStorage.setItem('current_admin_complaint_id', '${c.complaint_id}')" class="btn btn-navy btn-sm">
+                  Review & Fix <i class="fas fa-chevron-right"></i>
+                </a>
+              </td>
+            </tr>
+          `).join('');
+
+          renderPagination(res.page, res.totalPages);
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function renderPagination(page, totalPages) {
+      const controls = document.getElementById('admin-pagination');
+      if (totalPages <= 1) {
+        controls.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      if (page > 1) {
+        html += `<button class="btn btn-secondary btn-sm" onclick="goToPage(${page - 1})"><i class="fas fa-chevron-left"></i> Prev</button>`;
+      }
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="btn btn-sm ${i === page ? 'btn-primary' : 'btn-secondary'}" onclick="goToPage(${i})">${i}</button>`;
+      }
+      if (page < totalPages) {
+        html += `<button class="btn btn-secondary btn-sm" onclick="goToPage(${page + 1})">Next <i class="fas fa-chevron-right"></i></button>`;
+      }
+      controls.innerHTML = html;
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      loadComplaints();
+    }
+
+    function exportToCsv() {
+      if (cachedComplaints.length === 0) {
+        showToast('No complaints to export.', 'warning');
+        return;
+      }
+
+      let csv = 'Complaint ID,Title,Category,Priority,Department,Status,Address,Created Date\n';
+      cachedComplaints.forEach(c => {
+        csv += `"${c.complaint_id}","${c.title.replace(/"/g, '""')}","${c.category}","${c.priority}","${c.department_name || ''}","${c.status}","${c.address.replace(/"/g, '""')}","${c.created_at}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `civicpulse_complaints_${Date.now()}.csv`);
+      a.click();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadComplaints);
+  </script>
+</body>
+</html>

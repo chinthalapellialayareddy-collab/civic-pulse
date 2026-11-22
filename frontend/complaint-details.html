@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Tracking – CivicPulse</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ── Progress Tracker ── */
+    .tracking-hero {
+      background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.5rem 1.5rem;
+      color: white;
+      margin-bottom: 2rem;
+    }
+    .tracking-hero .complaint-ref {
+      font-size: 0.85rem; color: #93c5fd; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .tracking-hero h1 {
+      font-size: 1.75rem; font-weight: 800; margin: 0.4rem 0 0.5rem; color: #fff; line-height: 1.25;
+    }
+    .tracking-hero .meta-row {
+      display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center;
+      font-size: 0.85rem; color: #bfdbfe; margin-top: 0.5rem;
+    }
+
+    /* ── 5-Step Timeline Bar ── */
+    .steps-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 2.5rem 1rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .steps-track {
+      position: absolute;
+      top: 42px;
+      left: calc(10% + 20px);
+      right: calc(10% + 20px);
+      height: 5px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      z-index: 1;
+    }
+    .steps-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #0D9488, #3B82F6);
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+      width: 0%;
+    }
+    .step-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 20%;
+      text-align: center;
+    }
+    .step-dot {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #cbd5e1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: #94a3b8;
+      transition: all 0.4s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 0.5rem;
+    }
+    .step-item.done .step-dot {
+      background: #0D9488; border-color: #0D9488; color: white;
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.18);
+    }
+    .step-item.active .step-dot {
+      background: white; border-color: #3B82F6; color: #3B82F6;
+      box-shadow: 0 0 0 5px rgba(59,130,246,0.22);
+      animation: pulse-ring 2s infinite;
+    }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 4px rgba(59,130,246,0.22); }
+      50%  { box-shadow: 0 0 0 9px rgba(59,130,246,0.08); }
+      100% { box-shadow: 0 0 0 4px rgba(59,130,246,0.22); }
+    }
+    .step-label {
+      font-size: 0.75rem; font-weight: 700; color: #94a3b8; line-height: 1.3;
+    }
+    .step-item.done .step-label { color: #0D9488; }
+    .step-item.active .step-label { color: #172554; font-size: 0.8rem; }
+
+    /* ── Audit Timeline ── */
+    .audit-timeline {
+      position: relative;
+      padding-left: 2.25rem;
+      border-left: 2px solid #e2e8f0;
+      margin: 0.5rem 0;
+    }
+    .audit-event {
+      position: relative;
+      margin-bottom: 1.75rem;
+    }
+    .audit-event:last-child { margin-bottom: 0; }
+    .audit-event::before {
+      content: '';
+      position: absolute;
+      left: -2.65rem;
+      top: 4px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #3B82F6;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px #3B82F6;
+    }
+    .audit-event.pending::before { background: #F59E0B; box-shadow: 0 0 0 2px #F59E0B; }
+    .audit-event.resolved::before { background: #16A34A; box-shadow: 0 0 0 2px #16A34A; }
+    .audit-event.inprogress::before { background: #7C3AED; box-shadow: 0 0 0 2px #7C3AED; }
+    .audit-event.assigned::before { background: #0D9488; box-shadow: 0 0 0 2px #0D9488; }
+
+    /* ── Before/After ── */
+    .before-after-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+    }
+    .photo-box {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      height: 240px;
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+    }
+    .photo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-box.before-box { border-color: #fecaca; }
+    .photo-box.after-box  { border-color: #bbf7d0; }
+
+    /* ── Detail chips ── */
+    .info-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 999px; padding: 0.3rem 0.8rem;
+      font-size: 0.8rem; color: #475569; font-weight: 600;
+    }
+
+    /* ── Error / Empty states ── */
+    .state-box {
+      text-align: center; padding: 4rem 2rem;
+      background: white; border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+    }
+    .refresh-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(13,148,136,0.12); color: #0D9488;
+      border-radius: 999px; padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 700; margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <header id="main-header"></header>
+
+  <main class="cp-container" style="padding: 2rem 1.5rem; max-width: 1100px;">
+
+    <!-- Back + Support Row -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
+      <a href="javascript:history.back()" class="btn btn-secondary btn-sm" style="background:white;border:1px solid var(--border-color);color:var(--primary-navy);">
+        <i class="fas fa-arrow-left"></i> Back to My Complaints
+      </a>
+      <div id="support-btn-area"></div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="state-loading" class="state-box">
+      <i class="fas fa-satellite-dish fa-2x" style="color:var(--teal);animation:spin 2s linear infinite;"></i>
+      <p style="margin-top:0.75rem;color:var(--text-muted);font-weight:600;">Fetching live tracking data…</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="state-error" class="state-box" style="display:none;">
+      <i class="fas fa-exclamation-triangle fa-3x" style="color:#f59e0b;margin-bottom:1rem;"></i>
+      <h3 style="color:var(--primary-navy);font-weight:800;" id="error-title">Could Not Load Tracking</h3>
+      <p style="color:var(--text-muted);margin:0.5rem 0 1.5rem;" id="error-msg">Please check your connection and try again.</p>
+      <button onclick="loadComplaintDetails()" class="btn btn-primary">
+        <i class="fas fa-redo"></i> Retry
+      </button>
+      <a href="/my-complaints.html" class="btn btn-secondary" style="margin-left:0.5rem;">My Complaints</a>
+    </div>
+
+    <!-- Main Content -->
+    <div id="state-content" style="display:none;">
+
+      <!-- Hero Banner -->
+      <div class="tracking-hero">
+        <div class="complaint-ref" id="ref-badge">Loading…</div>
+        <h1 id="track-title">—</h1>
+        <div class="meta-row">
+          <span><i class="fas fa-map-marker-alt"></i> <span id="track-addr">—</span></span>
+          <span><i class="fas fa-calendar"></i> Lodged: <span id="track-date">—</span></span>
+          <span><i class="fas fa-building"></i> <span id="track-dept">Pending Review</span></span>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <span id="badge-category" class="status-badge Assigned" style="font-size:0.8rem;"></span>
+          <span id="badge-priority" class="priority-badge priority-Medium" style="font-size:0.8rem;"></span>
+          <span id="badge-status" class="status-badge Pending" style="font-size:0.8rem;"></span>
+          <span id="live-indicator" class="refresh-badge" style="display:none;">
+            <i class="fas fa-circle" style="font-size:0.5rem;animation:pulse-ring 1.5s infinite;"></i> LIVE
+          </span>
+        </div>
+      </div>
+
+      <!-- 5-Step Progress Tracker -->
+      <div class="cp-card" style="margin-bottom:2rem;padding:1.25rem 1.5rem 1.75rem;">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--primary-navy);margin-bottom:0;display:flex;align-items:center;gap:0.5rem;">
+          <i class="fas fa-route" style="color:var(--teal);"></i> Resolution Progress
+        </h3>
+        <div class="steps-wrapper">
+          <div class="steps-track"><div class="steps-fill" id="steps-fill"></div></div>
+
+          <div class="step-item" id="step-0">
+            <div class="step-dot"><i class="fas fa-clipboard-check"></i></div>
+            <div class="step-label">Submitted</div>
+          </div>
+          <div class="step-item" id="step-1">
+            <div class="step-dot"><i class="fas fa-search"></i></div>
+            <div class="step-label">Reviewed</div>
+          </div>
+          <div class="step-item" id="step-2">
+            <div class="step-dot"><i class="fas fa-user-shield"></i></div>
+            <div class="step-label">Assigned</div>
+          </div>
+          <div class="step-item" id="step-3">
+            <div class="step-dot"><i class="fas fa-tools"></i></div>
+            <div class="step-label">In Progress</div>
+          </div>
+          <div class="step-item" id="step-4">
+            <div class="step-dot"><i class="fas fa-check-double"></i></div>
+            <div class="step-label">Resolved</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:0.5rem;">
+          <span id="status-summary-text" style="font-size:0.9rem;color:var(--text-muted);font-weight:600;"></span>
+        </div>
+      </div>
+
+      <!-- Before/After Section (only when resolved) -->
+      <div id="before-after-section" class="cp-card" style="margin-bottom:2rem;display:none;">
+        <div class="cp-card-header">
+          <div class="cp-card-title">
+            <i class="fas fa-images" style="color:var(--green);"></i> Before-and-After Field Verification
+          </div>
+          <span class="status-badge Resolved"><i class="fas fa-shield-alt"></i> Verified</span>
+        </div>
+        <div class="before-after-grid">
+          <div>
+            <div style="font-weight:700;color:#b91c1c;font-size:0.85rem;margin-bottom:0.5rem;">
+              <i class="fas fa-exclamation-circle"></i> Original Problem
+            </div>
+            <div class="photo-box before-box"><img id="img-before" src="" alt="Before"></div>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#15803d;font-size:0.85rem;margin-bottom:0.5rem;">
+              <i class="fas fa-check-circle"></i> Fixed & Resolved
+            </div>
+            <div class="photo-box after-box"><img id="img-after" src="" alt="After"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main two-column layout -->
+      <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:1.5rem;align-items:start;">
+
+        <!-- Left: Complaint Info -->
+        <div class="cp-card">
+          <h3 style="font-size:1rem;font-weight:700;color:var(--primary-navy);margin-bottom:1rem;border-bottom:1px solid var(--border-color);padding-bottom:0.5rem;">
+            <i class="fas fa-info-circle" style="color:var(--bright-blue);"></i> Issue Details
+          </h3>
+
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:0.3rem;">Description</div>
+            <p id="track-desc" style="color:#334155;line-height:1.65;font-size:0.9rem;margin:0;"></p>
+          </div>
+
+          <div id="photo-section" style="margin-bottom:1rem;">
+            <div style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;margin-bottom:0.35rem;">Attached Photo</div>
+            <div style="border-radius:var(--radius-sm);overflow:hidden;height:200px;background:#f1f5f9;">
+              <img id="track-img" src="" alt="Issue Photo" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+          </div>
+
+          <div style="background:#f8fafc;padding:0.85rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
+            <div style="font-size:0.8rem;color:#475569;margin-bottom:0.35rem;">
+              <i class="fas fa-crosshairs" style="color:var(--teal);"></i> <strong>GPS:</strong> <span id="track-coords">—</span>
+            </div>
+            <div style="font-size:0.8rem;color:#475569;margin-bottom:0.35rem;">
+              <i class="fas fa-hashtag" style="color:var(--purple);"></i> <strong>ID:</strong> <span id="track-ref-id">—</span>
+            </div>
+            <a id="osm-link" href="#" target="_blank" style="font-size:0.8rem;color:var(--bright-blue);font-weight:600;text-decoration:none;">
+              <i class="fas fa-external-link-alt"></i> View on Map
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Official Timeline -->
+        <div class="cp-card">
+          <h3 style="font-size:1rem;font-weight:700;color:var(--primary-navy);margin-bottom:1.25rem;border-bottom:1px solid var(--border-color);padding-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;">
+            <span><i class="fas fa-history" style="color:var(--teal);"></i> Official Redressal Timeline</span>
+            <button onclick="refreshTracking()" style="background:none;border:none;cursor:pointer;color:var(--teal);font-size:0.8rem;font-weight:700;" title="Refresh">
+              <i class="fas fa-sync-alt" id="refresh-icon"></i> Refresh
+            </button>
+          </h3>
+          <div id="timeline-container" class="audit-timeline"></div>
+        </div>
+      </div>
+
+    </div><!-- /state-content -->
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    // Determine backend base for image URLs (when served from port 3000, images are on 5000)
+    const BACKEND_BASE = (window.location.port === '3000' || window.location.port === '5173' || window.location.port === '8080')
+      ? 'http://localhost:5000'
+      : '';
+
+    function resolveImageUrl(url) {
+      if (!url) return null;
+      if (url.startsWith('http')) return url;
+      return BACKEND_BASE + url;
+    }
+
+    function getTrackingId() {
+      // 1. Check URL query string '?id=...'
+      const params = new URLSearchParams(window.location.search);
+      let id = params.get('id');
+      if (id && id.trim()) return id.trim();
+
+      // 2. Check hash #CP-XXXX
+      const hash = window.location.hash.replace(/^#/, '').trim();
+      if (hash && hash.startsWith('CP-')) return hash;
+
+      // 3. Check sessionStorage or localStorage
+      id = sessionStorage.getItem('current_tracking_id') || localStorage.getItem('current_tracking_id');
+      if (id && id.trim()) return id.trim();
+
+      return null;
+    }
+
+    let activeComplaintId = null;
+    let refreshInterval = null;
+
+    function showState(state) {
+      document.getElementById('state-loading').style.display = state === 'loading' ? '' : 'none';
+      document.getElementById('state-error').style.display   = state === 'error'   ? '' : 'none';
+      document.getElementById('state-content').style.display = state === 'content' ? '' : 'none';
+    }
+
+    function updateProgressBar(status) {
+      const statusOrder = {
+        'Pending':     0,
+        'Reviewed':    1,
+        'Assigned':    2,
+        'In Progress': 3,
+        'Resolved':    4
+      };
+      const statusMessages = {
+        'Pending':     '📋 Complaint submitted. Awaiting municipal review.',
+        'Reviewed':    '🔍 Reviewed by control center. Being processed.',
+        'Assigned':    '👷 Assigned to department field team.',
+        'In Progress': '🔧 Field crew actively working on resolution.',
+        'Resolved':    '✅ Issue fully resolved. Ground verified.'
+      };
+
+      const stepIdx = statusOrder[status] ?? 0;
+
+      for (let i = 0; i < 5; i++) {
+        const el = document.getElementById(`step-${i}`);
+        el.className = 'step-item';
+        if (i < stepIdx) el.classList.add('done');
+        else if (i === stepIdx) el.classList.add('active');
+      }
+
+      // Progress bar fill: 0% at step 0, 100% at step 4
+      const fillPct = stepIdx === 0 ? 0 : (stepIdx / 4) * 100;
+      document.getElementById('steps-fill').style.width = fillPct + '%';
+
+      document.getElementById('status-summary-text').textContent = statusMessages[status] || '';
+
+      // Live indicator for non-resolved
+      document.getElementById('live-indicator').style.display = status !== 'Resolved' ? 'inline-flex' : 'none';
+    }
+
+    function renderTimeline(events) {
+      const container = document.getElementById('timeline-container');
+      if (!events || events.length === 0) {
+        container.innerHTML = `
+          <div class="audit-event pending">
+            <div style="font-weight:700;color:var(--primary-navy);font-size:0.9rem;">Complaint Lodged</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;">Awaiting control center review and triage.</div>
+          </div>`;
+        return;
+      }
+
+      const statusClass = {
+        'Pending':     'pending',
+        'Resolved':    'resolved',
+        'In Progress': 'inprogress',
+        'Assigned':    'assigned',
+        'Reviewed':    ''
+      };
+
+      container.innerHTML = events.map(e => {
+        const cls = statusClass[e.status] || '';
+        const imgUrl = resolveImageUrl(e.resolution_image);
+        return `
+          <div class="audit-event ${cls}">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.25rem;">
+              <span class="status-badge ${(e.status||'').replace(/\s+/g,'')}" style="font-size:0.72rem;">${e.status}</span>
+              <span style="font-size:0.72rem;color:var(--text-light);">${new Date(e.created_at).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+            </div>
+            <div style="font-weight:600;color:var(--primary-navy);font-size:0.9rem;line-height:1.5;">
+              ${e.remarks || 'Status updated by administration.'}
+            </div>
+            ${e.admin_name ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;"><i class="fas fa-user-tie"></i> ${e.admin_name}</div>` : ''}
+            ${imgUrl ? `
+              <div style="margin-top:0.65rem;">
+                <img src="${imgUrl}" alt="Resolution proof" style="max-width:220px;border-radius:6px;border:1px solid var(--border-color);display:block;">
+              </div>` : ''}
+          </div>`;
+      }).join('');
+    }
+
+    async function loadComplaintDetails() {
+      let complaintId = getTrackingId();
+
+      // If ID not in URL, attempt auto-loading citizen's most recent complaint
+      if (!complaintId) {
+        try {
+          const user = (window.api && typeof window.api.getUser === 'function') ? window.api.getUser() : null;
+          if (user) {
+            const token = window.api.getToken();
+            const myRes = await fetch(`${API_BASE}/complaints/my`, {
+              headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
+            const myData = await myRes.json().catch(() => null);
+            if (myData && myData.success && myData.complaints && myData.complaints.length > 0) {
+              complaintId = myData.complaints[0].complaint_id;
+              sessionStorage.setItem('current_tracking_id', complaintId);
+              localStorage.setItem('current_tracking_id', complaintId);
+            }
+          }
+        } catch (e) {
+          console.warn('Auto-fetch latest complaint err:', e);
+        }
+      }
+
+      if (!complaintId) {
+        showState('error');
+        document.getElementById('error-title').textContent = 'No Complaint Selected';
+        document.getElementById('error-msg').textContent = 'Please choose a grievance ticket from the complaints list to view its tracking milestones.';
+        return;
+      }
+
+      activeComplaintId = complaintId;
+
+      // Keep URL clean with ID parameter without page reload
+      try {
+        if (!window.location.search.includes('id=')) {
+          const newUrl = window.location.pathname + '?id=' + encodeURIComponent(complaintId);
+          window.history.replaceState(null, '', newUrl);
+        }
+      } catch (e) {}
+
+      showState('loading');
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${encodeURIComponent(complaintId)}`);
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok || !data || !data.success) {
+          showState('error');
+          document.getElementById('error-title').textContent = data?.message || 'Complaint Not Found';
+          document.getElementById('error-msg').textContent =
+            res.status === 404
+              ? `No complaint found with ID "${complaintId}". It may have been removed or the link is incorrect.`
+              : `Server error (${res.status}). Please try again.`;
+          return;
+        }
+
+        const c = data.complaint;
+        const timeline = data.timeline || [];
+
+        // Save active ID in storage for persistent navigation
+        sessionStorage.setItem('current_tracking_id', c.complaint_id);
+        localStorage.setItem('current_tracking_id', c.complaint_id);
+
+        // ── Hero ──
+        document.getElementById('ref-badge').textContent = `Tracking ID: #${c.complaint_id}`;
+        document.getElementById('track-title').textContent = c.title;
+        document.getElementById('track-addr').textContent = c.address || '—';
+        document.getElementById('track-date').textContent = new Date(c.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+        document.getElementById('track-dept').textContent = c.department_name || 'Pending Assignment';
+        document.getElementById('track-ref-id').textContent = `#${c.complaint_id}`;
+
+        // Badges
+        document.getElementById('badge-category').textContent = c.category;
+        const pBadge = document.getElementById('badge-priority');
+        pBadge.textContent = c.priority;
+        pBadge.className = `priority-badge priority-${c.priority}`;
+        const sBadge = document.getElementById('badge-status');
+        sBadge.textContent = c.status;
+        sBadge.className = `status-badge ${(c.status || '').replace(/\s+/g,'')}`;
+
+        // ── Support Button ──
+        const user = (window.api && typeof window.api.getUser === 'function') ? window.api.getUser() : null;
+        if (user) {
+          document.getElementById('support-btn-area').innerHTML = `
+            <button onclick="supportComplaint(${c.id})" class="btn btn-primary btn-sm">
+              <i class="fas fa-thumbs-up"></i> Support Issue (<span id="support-count">${c.support_count || 0}</span>)
+            </button>`;
+        }
+
+        // ── Progress Bar ──
+        updateProgressBar(c.status);
+
+        // ── Description & Photo ──
+        document.getElementById('track-desc').textContent = c.description || '—';
+
+        const imgUrl = resolveImageUrl(c.image_url);
+        if (imgUrl) {
+          document.getElementById('track-img').src = imgUrl;
+          document.getElementById('track-img').onerror = function() {
+            this.parentElement.parentElement.style.display = 'none';
+          };
+        } else {
+          document.getElementById('photo-section').style.display = 'none';
+        }
+
+        // ── Coordinates ──
+        if (c.latitude && c.longitude) {
+          document.getElementById('track-coords').textContent = `${Number(c.latitude).toFixed(5)}, ${Number(c.longitude).toFixed(5)}`;
+          document.getElementById('osm-link').href = `https://www.openstreetmap.org/?mlat=${c.latitude}&mlon=${c.longitude}#map=16/${c.latitude}/${c.longitude}`;
+        } else {
+          document.getElementById('track-coords').textContent = 'Not specified';
+        }
+
+        // ── Before/After ──
+        const resolvedEvent = timeline.find(t => t.status === 'Resolved' && t.resolution_image);
+        if (c.status === 'Resolved' && resolvedEvent) {
+          document.getElementById('before-after-section').style.display = 'block';
+          document.getElementById('img-before').src = imgUrl || '';
+          document.getElementById('img-after').src = resolveImageUrl(resolvedEvent.resolution_image);
+        }
+
+        // ── Timeline ──
+        renderTimeline(timeline);
+
+        showState('content');
+
+        // Auto-refresh every 30s if not resolved
+        if (c.status !== 'Resolved' && !refreshInterval) {
+          refreshInterval = setInterval(refreshTracking, 30000);
+        }
+
+      } catch (err) {
+        showState('error');
+        document.getElementById('error-title').textContent = 'Connection Error';
+        document.getElementById('error-msg').textContent = `Could not reach backend server. Make sure the server is running. (${err.message})`;
+      }
+    }
+
+    async function refreshTracking() {
+      const idToRefresh = activeComplaintId || getTrackingId();
+      if (!idToRefresh) return;
+
+      const icon = document.getElementById('refresh-icon');
+      if (icon) { icon.style.animation = 'spin 1s linear infinite'; }
+
+      try {
+        const res = await fetch(`${API_BASE}/complaints/${encodeURIComponent(idToRefresh)}`);
+        const data = await res.json().catch(() => null);
+        if (data && data.success) {
+          updateProgressBar(data.complaint.status);
+          renderTimeline(data.timeline || []);
+
+          const sBadge = document.getElementById('badge-status');
+          sBadge.textContent = data.complaint.status;
+          sBadge.className = `status-badge ${(data.complaint.status || '').replace(/\s+/g,'')}`;
+
+          if (data.complaint.status === 'Resolved' && refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+            document.getElementById('live-indicator').style.display = 'none';
+          }
+        }
+      } catch (e) {
+        console.warn('Refresh failed:', e.message);
+      } finally {
+        if (icon) { icon.style.animation = ''; }
+      }
+    }
+
+    async function supportComplaint(id) {
+      if (!api.isTokenValid()) {
+        showToast('Please log in to support this issue.', 'warning');
+        setTimeout(() => window.location.href = '/login.html', 1200);
+        return;
+      }
+      try {
+        const res = await api.post(`/complaints/${id}/support`, {});
+        showToast(res.message, res.supported ? 'success' : 'info');
+        const el = document.getElementById('support-count');
+        if (el) el.textContent = res.supportCount;
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Add spin keyframe
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+
+    document.addEventListener('DOMContentLoaded', loadComplaintDetails);
+  </script>
+</body>
+</html>

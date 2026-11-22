@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – CivicPulse Platform</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body style="background: linear-gradient(135deg, var(--bg-slate) 0%, #e2e8f0 100%); min-height: 100vh;">
+  <header id="main-header"></header>
+
+  <main class="cp-container" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 180px); padding: 2rem 1.5rem;">
+    <div class="cp-card" style="width: 100%; max-width: 440px; padding: 2.5rem; box-shadow: var(--shadow-xl);">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div class="cp-brand-logo" style="margin: 0 auto 1rem; width: 48px; height: 48px; font-size: 1.5rem;">
+          <i class="fas fa-city"></i>
+        </div>
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--primary-navy);" data-i18n="nav_login">Login</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.35rem;">Access your dashboard and civic grievance tickets</p>
+      </div>
+
+      <!-- Error Alert Box -->
+      <div id="login-error-alert" style="display: none; background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+          <i class="fas fa-exclamation-circle" style="color: #ef4444; margin-top: 2px;"></i>
+          <div style="flex: 1; font-size: 0.85rem; color: #991b1b; font-weight: 600;" id="login-error-text"></div>
+        </div>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div style="position: relative;">
+            <input type="email" id="email" class="form-control" placeholder="name@example.com" required style="padding-left: 2.75rem;">
+            <i class="fas fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label class="form-label" style="margin-bottom: 0;">Password</label>
+            <a href="/forgot-password.html" style="font-size: 0.8rem; color: var(--bright-blue); font-weight: 600;">Forgot Password?</a>
+          </div>
+          <div style="position: relative;">
+            <input type="password" id="password" class="form-control" placeholder="••••••••" required style="padding-left: 2.75rem; padding-right: 2.5rem;">
+            <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+            <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;" title="Show/Hide Password">
+              <i class="fas fa-eye" id="pwd-eye-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 1rem; margin-top: 0.5rem;">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div>
+          Don't have an account yet? <a href="/register.html" style="color: var(--teal); font-weight: 700;">Register as Citizen</a>
+        </div>
+        <div style="font-size: 0.85rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-color);">
+          <i class="fas fa-shield-alt" style="color: #0284c7;"></i> Municipal Official? <a href="/admin-login.html" style="color: #0f172a; font-weight: 700; text-decoration: underline;">Official Command Center Login &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('pwd-eye-icon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeIcon.className = 'fas fa-eye-slash';
+      } else {
+        pwdInput.type = 'password';
+        eyeIcon.className = 'fas fa-eye';
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('login-btn');
+      const errorAlert = document.getElementById('login-error-alert');
+      const errorText = document.getElementById('login-error-text');
+
+      errorAlert.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+
+      try {
+        const res = await api.post('/auth/login', { email, password });
+        if (res.success) {
+          // Clear any stale auth data before setting new
+          api.clearAuth();
+          api.setToken(res.token);
+          api.setUser(res.user);
+          showToast(`Welcome back, ${res.user.name}! Redirecting...`, 'success');
+
+          // Check redirect or route by role
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirect = urlParams.get('redirect');
+
+          setTimeout(() => {
+            if (redirect && redirect.startsWith('/')) {
+              window.location.href = redirect;
+            } else if (res.user.role === 'Admin') {
+              window.location.href = '/admin-dashboard.html';
+            } else {
+              window.location.href = '/citizen-dashboard.html';
+            }
+          }, 800);
+        }
+      } catch (err) {
+        const errMsg = err.message || 'Login failed. Check your credentials.';
+        errorText.textContent = errMsg;
+        errorAlert.style.display = 'block';
+        showToast(errMsg, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      }
+    }
+
+    // If already logged in with valid token, redirect away from login page
+    window.addEventListener('DOMContentLoaded', () => {
+      if (api.isTokenValid()) {
+        const user = api.getUser();
+        if (user) {
+          window.location.href = user.role === 'Admin' ? '/admin-dashboard.html' : '/citizen-dashboard.html';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

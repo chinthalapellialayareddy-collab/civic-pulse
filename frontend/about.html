@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About CivicPulse – AI Civic Accountability</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header id="main-header"></header>
+
+  <div style="background: linear-gradient(135deg, var(--primary-navy-dark), var(--primary-navy)); color: white; padding: 3.5rem 1.5rem 3rem;">
+    <div class="cp-container" style="text-align: center; max-width: 800px;">
+      <span class="status-badge Assigned" style="margin-bottom: 0.75rem;">ACADEMIC INNOVATION INITIATIVE</span>
+      <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">About CivicPulse</h1>
+      <p style="font-size: 1.1rem; color: #cbd5e1;">Bridging the trust and communication gap between citizens and municipal engineering divisions through artificial intelligence, algorithmic transparency, and geospatial precision.</p>
+    </div>
+  </div>
+
+  <main class="cp-container" style="padding: 3.5rem 1.5rem;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 4rem;">
+      <div>
+        <span class="status-badge InProgress" style="margin-bottom: 0.5rem;">THE PROBLEM</span>
+        <h2 style="font-size: 2rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 1rem;">Why CivicPulse was Created</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Traditional civic grievance redressal channels suffer from deep systemic hurdles: opaque progress tracking, duplicate complaint cluttering, lack of clear photographic proof of resolution, and cumbersome reporting interfaces.</p>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">CivicPulse transforms municipal accountability into a transparent, cooperative ecosystem where every citizen report is treated as a priority data point.</p>
+        <div style="display: flex; gap: 1rem;">
+          <a href="/report-issue.html" class="btn btn-primary">Report a Civic Issue</a>
+          <a href="/public-map.html" class="btn btn-outline">Explore Map</a>
+        </div>
+      </div>
+      <div>
+        <img src="https://images.unsplash.com/photo-1477959858617-67f30bc75b82?w=800&auto=format&fit=crop&q=80" alt="Smart City" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);">
+      </div>
+    </div>
+
+    <!-- Core Values -->
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <h3 style="font-size: 1.8rem; font-weight: 800; color: var(--primary-navy);">Core Engineering Pillars</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+      <div class="cp-card">
+        <i class="fas fa-brain fa-2x" style="color: var(--purple); margin-bottom: 1rem;"></i>
+        <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Gemini AI Triage</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Automatic categorization, intelligent priority determination, and concise issue summaries with zero manual clerical lag.</p>
+      </div>
+      <div class="cp-card">
+        <i class="fas fa-layer-group fa-2x" style="color: var(--teal); margin-bottom: 1rem;"></i>
+        <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Duplicate Cluster Detection</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Geographic radius matching (Haversine formula) prevents redundant work orders and consolidates public upvotes.</p>
+      </div>
+      <div class="cp-card">
+        <i class="fas fa-camera-retro fa-2x" style="color: var(--green); margin-bottom: 1rem;"></i>
+        <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Before-and-After Verification</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">No complaint can be resolved without an official repair photograph and verified field engineer remarks.</p>
+      </div>
+      <div class="cp-card">
+        <i class="fas fa-language fa-2x" style="color: var(--bright-blue); margin-bottom: 1rem;"></i>
+        <h4 style="font-weight: 700; color: var(--primary-navy); margin-bottom: 0.5rem;">Bilingual Inclusion</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Comprehensive Telugu and English localization ensures democratic accessibility across diverse citizen demographics.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer id="main-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/components.js"></script>
+</body>
+</html>
